@@ -17,26 +17,7 @@ void init(){
 	glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
 }
 
-void drawBullet(){
-	glColor3f(1.0f, 0.0f, 0.0f);
 
-	glTranslatef(0.0f, 1.2f, 0.0f);
-	glutSolidCube(0.1);
-	//-----------------------------------------
-	glTranslatef(-0.1f, -0.1f, 0.0f);
-	glutSolidCube(0.1);
-	glTranslatef(0.1f, 0.0f, 0.0f);
-	glutSolidCube(0.1);
-	glTranslatef(0.1f, 0.0f, 0.0f);
-	glutSolidCube(0.1);
-	//-----------------------------------------
-	glTranslatef(-0.2f, -0.1f, 0.0f);
-	glutSolidCube(0.1);
-	glTranslatef(0.1f, 0.0f, 0.0f);
-	glutSolidCube(0.1);
-	glTranslatef(0.1f, 0.0f, 0.0f);
-	glutSolidCube(0.1);
-}
 
 
 void drawPlayer() {
@@ -318,13 +299,15 @@ void render()
 	drawPlayer();
 	glPopMatrix();
 
-	if(shot == 1)
-	{
-
-		glPushMatrix();
-		glTranslatef(bx, by, bz);
-		drawBullet();
-		glPopMatrix();
+	if(shot==1) {
+		if(poc1->isLive() == false) {
+			poc1->setLive(true);
+			poc1->setX(px);
+			poc1->setY(py);
+		}
+		else {
+			poc1->renderBullet();
+		}
 	}
 
 	glEnable(GL_LIGHTING);
@@ -399,19 +382,17 @@ void releaseKey(int key, int x, int y) {
 
 
 void ZegarFun(int val) {
-	/* "Rotacja" koloru */
 	if(shot==1){
-		if(by<6.0f) {
-			by += 0.1f;
+		if(poc1->getY() < 4.0f) {
+			poc1->updateBullet();
 		}
 		else {
 		    shot = 0;
-            by = -4.0f;
+            poc1->setY(-6.0f);
+            poc1->setLive(false);
 
 		}
 	}
-    std::cout << "Shot = " << shot << std::endl;
-    std::cout << "Bullet Y = " << by << std::endl;
 	przec1->updateEnemy();
 	przec2->updateEnemy();
 	przec3->updateEnemy();
@@ -449,10 +430,29 @@ void ZegarFun(int val) {
 	przec35->updateEnemy();
 	przec36->updateEnemy();
 
+#if GLUT_DEBUG
+	float pom1 = przec1->getX();
+	float pom2 = przec1->getY();
+	float pom3 = przec7->getX();
+	float pom4 = przec7->getY();
+
+	std::cout << "Przeciwnik1 X =" << pom1 << std::endl;
+	std::cout << "Przeciwnik7 X =" << pom3 << std::endl;
+	std::cout << "Przeciwnik1 Y =" << pom2 << std::endl;
+	std::cout << "Przeciwnik7 Y =" << pom4 << std::endl;
+#endif
+
 	/* Odrysowanie sceny: */
 	glutPostRedisplay();
 	/* Ponowne wystartowanie zegara: */
 	glutTimerFunc(1000/ANIM_FPS, ZegarFun, 0);
+}
+
+bool Kolizja(float bx, float by, int bh, int bw, float ex, float ey, int eh, int ew){
+    if(bx  > ex + ew || bx + bw < ex || by > ey +eh || by + bh < ey)
+        return false;
+    else
+        return true;
 }
 
 //---------------------------------------------------------------------------------------------------------------------------------------------------------
