@@ -4,6 +4,7 @@
 #include <cmath>
 #include <GL/freeglut.h>
 #include "Enemy.h"
+#include "Bullet.h"
 
 #define ANIM_FPS 60
 
@@ -67,3 +68,4 @@ Enemy* przec33 = new Enemy(10,2);
 Enemy* przec34 = new Enemy(11,0);
 Enemy* przec35 = new Enemy(11,1);
 Enemy* przec36 = new Enemy(11,2);
+Bullet* poc1 = new Bullet();
